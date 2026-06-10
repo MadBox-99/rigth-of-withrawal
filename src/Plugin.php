@@ -21,10 +21,11 @@ class Plugin
         $this->renderer = new FormRenderer();
 
         require_once ELALLAS_DIR . 'src/Form/block.php';
-        \Elallas\Form\register_block();
+        \Elallas\Form\register_block([$this, 'renderStep']);
 
         add_action('init', [$this, 'loadTextdomain']);
         add_shortcode('elallasi_urlap', [$this, 'shortcode']);
+        add_action('wp_enqueue_scripts', [$this, 'enqueueAssets']);
 
         add_action('admin_post_nopriv_elallas_prepare', [$this, 'handlePrepare']);
         add_action('admin_post_elallas_prepare', [$this, 'handlePrepare']);
@@ -79,7 +80,55 @@ class Plugin
 
     public function shortcode($atts = []): string
     {
-        return $this->renderer->renderForm();
+        return $this->renderStep();
+    }
+
+    public function renderStep(): string
+    {
+        $step = isset($_GET['elallas_step']) ? sanitize_key((string) $_GET['elallas_step']) : '';
+
+        if ($step === 'confirm') {
+            $pending = get_transient('elallas_pending_' . $this->clientKey());
+            if (is_array($pending) && !empty($pending['id']) && !empty($pending['token'])) {
+                return $this->renderer->renderConfirm(
+                    $pending['data'] ?? [],
+                    (int) $pending['id'],
+                    (string) $pending['token']
+                );
+            }
+            // No valid pending submission — fall through to a fresh form.
+        }
+
+        if ($step === 'done') {
+            return $this->renderer->renderMessage(
+                __('Köszönjük! Elállási nyilatkozatát rögzítettük, a visszaigazolást elküldtük a megadott e-mail címre.', 'elallasi-funkcio')
+            );
+        }
+
+        if ($step === 'error') {
+            return $this->renderer->renderMessage(
+                __('A megerősítés érvénytelen vagy lejárt. Kérjük, kezdje újra az elállási folyamatot.', 'elallasi-funkcio')
+            ) . $this->renderer->renderForm();
+        }
+
+        $errKey = 'elallas_errors_' . $this->clientKey();
+        $errors = get_transient($errKey);
+        if (is_array($errors) && $errors !== []) {
+            delete_transient($errKey);
+        } else {
+            $errors = [];
+        }
+        return $this->renderer->renderForm($errors);
+    }
+
+    public function enqueueAssets(): void
+    {
+        wp_enqueue_style(
+            'elallas-form',
+            plugins_url('assets/css/form.css', ELALLAS_FILE),
+            [],
+            ELALLAS_VERSION
+        );
     }
 
     private function gdprExporter(): \Elallas\Privacy\GdprExporter

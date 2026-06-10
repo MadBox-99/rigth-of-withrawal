@@ -13,6 +13,11 @@ class FormRenderer
         return $this->render('confirm.php', ['data' => $data, 'id' => $id, 'token' => $token]);
     }
 
+    public function renderMessage(string $message): string
+    {
+        return '<div class="elallas-message"><p>' . esc_html($message) . '</p></div>';
+    }
+
     private function render(string $template, array $vars): string
     {
         extract($vars, EXTR_SKIP);

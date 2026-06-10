@@ -48,4 +48,51 @@ class PluginBootTest extends TestCase
         $this->assertNull($plugin->resolveConfirmationId(false, 'any'));
         $this->assertNull($plugin->resolveConfirmationId(['id' => 1], 'any')); // no token
     }
+
+    public function test_render_step_shows_confirm_screen_when_pending_exists(): void
+    {
+        $_GET['elallas_step'] = 'confirm';
+        Functions\when('sanitize_key')->returnArg(1);
+        Functions\when('__')->returnArg(1);
+        Functions\when('esc_html')->returnArg(1);
+        Functions\when('esc_attr')->returnArg(1);
+        Functions\when('esc_url')->returnArg(1);
+        Functions\when('admin_url')->justReturn('https://example.com/wp-admin/admin-post.php');
+        Functions\when('wp_nonce_field')->justReturn('<input type="hidden" name="_wpnonce" value="x">');
+        Functions\when('get_transient')->justReturn([
+            'id' => 42, 'token' => 'tok-xyz',
+            'data' => ['consumer_name' => 'Teszt Elek', 'order_reference' => 'WC-1001'],
+        ]);
+
+        $plugin = new Plugin();
+        $plugin->boot(); // sets up $this->renderer
+        $html = $plugin->renderStep();
+
+        unset($_GET['elallas_step']);
+
+        $this->assertStringContainsString('Elállás véglegesítése', $html);
+        $this->assertStringContainsString('value="42"', $html);
+        $this->assertStringContainsString('value="tok-xyz"', $html);
+        $this->assertStringContainsString('Teszt Elek', $html);
+    }
+
+    public function test_render_step_shows_form_by_default(): void
+    {
+        unset($_GET['elallas_step']);
+        Functions\when('sanitize_key')->returnArg(1);
+        Functions\when('__')->returnArg(1);
+        Functions\when('esc_html')->returnArg(1);
+        Functions\when('esc_attr')->returnArg(1);
+        Functions\when('esc_url')->returnArg(1);
+        Functions\when('admin_url')->justReturn('https://example.com/wp-admin/admin-post.php');
+        Functions\when('wp_nonce_field')->justReturn('<input>');
+        Functions\when('get_transient')->justReturn(false);
+
+        $plugin = new Plugin();
+        $plugin->boot();
+        $html = $plugin->renderStep();
+
+        $this->assertStringContainsString('Elállás a szerződéstől', $html);
+        $this->assertStringContainsString('name="consumer_name"', $html);
+    }
 }

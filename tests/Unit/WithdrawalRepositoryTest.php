@@ -42,4 +42,31 @@ class WithdrawalRepositoryTest extends TestCase
         $this->assertSame('confirmed', $wpdb->lastUpdate[1]['status']);
         $this->assertSame(['id' => 42], $wpdb->lastUpdate[2]);
     }
+
+    public function test_mark_receipt_sent_updates_timestamp(): void
+    {
+        $wpdb = new class {
+            public string $prefix = 'wp_';
+            public array $lastUpdate = [];
+            public function update($t, $data, $where) { $this->lastUpdate = [$t, $data, $where]; return 1; }
+        };
+        $repo = new WithdrawalRepository($wpdb);
+        $ok = $repo->markReceiptSent(42, '2026-06-10 12:10:00');
+
+        $this->assertTrue($ok);
+        $this->assertSame('2026-06-10 12:10:00', $wpdb->lastUpdate[1]['receipt_sent_at']);
+        $this->assertArrayNotHasKey('status', $wpdb->lastUpdate[1]);
+        $this->assertSame(['id' => 42], $wpdb->lastUpdate[2]);
+    }
+
+    public function test_insert_returns_zero_on_wpdb_failure(): void
+    {
+        $wpdb = new class {
+            public string $prefix = 'wp_';
+            public int $insert_id = 99;
+            public function insert($table, $data) { return false; }
+        };
+        $repo = new WithdrawalRepository($wpdb);
+        $this->assertSame(0, $repo->insert(['x' => 'y']));
+    }
 }

@@ -20,7 +20,10 @@ class WithdrawalRepository
 
     public function insert(array $row): int
     {
-        $this->wpdb->insert($this->tableName(), $row);
+        $result = $this->wpdb->insert($this->tableName(), $row);
+        if ($result === false) {
+            return 0;
+        }
         return (int)$this->wpdb->insert_id;
     }
 

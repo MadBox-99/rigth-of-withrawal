@@ -1,0 +1,5 @@
+.elallas-form, .elallas-confirm { max-width: 640px; }
+.elallas-form label { display:block; font-weight:600; margin-bottom:.25rem; }
+.elallas-form input, .elallas-form textarea { width:100%; padding:.5rem; }
+.elallas-error { color:#b00020; display:block; margin-top:.25rem; }
+.elallas-finalize { font-weight:700; }

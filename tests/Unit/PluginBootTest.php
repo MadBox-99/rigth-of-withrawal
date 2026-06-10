@@ -26,4 +26,25 @@ class PluginBootTest extends TestCase
         $this->assertTrue(Actions\has('admin_post_nopriv_elallas_prepare'));
         $this->assertTrue(Actions\has('admin_post_nopriv_elallas_confirm'));
     }
+
+    public function test_resolve_confirmation_returns_id_when_token_matches(): void
+    {
+        $plugin = new Plugin();
+        $pending = ['id' => 42, 'token' => 'good-token', 'data' => []];
+        $this->assertSame(42, $plugin->resolveConfirmationId($pending, 'good-token'));
+    }
+
+    public function test_resolve_confirmation_rejects_wrong_token(): void
+    {
+        $plugin = new Plugin();
+        $pending = ['id' => 42, 'token' => 'good-token', 'data' => []];
+        $this->assertNull($plugin->resolveConfirmationId($pending, 'wrong-token'));
+    }
+
+    public function test_resolve_confirmation_rejects_missing_pending(): void
+    {
+        $plugin = new Plugin();
+        $this->assertNull($plugin->resolveConfirmationId(false, 'any'));
+        $this->assertNull($plugin->resolveConfirmationId(['id' => 1], 'any')); // no token
+    }
 }

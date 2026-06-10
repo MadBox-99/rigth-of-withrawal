@@ -13,10 +13,14 @@ use Elallas\Submission\Validator;
 class Plugin
 {
     private FormRenderer $renderer;
+    private ?bool $proActive = null;
 
     public function boot(): void
     {
         $this->renderer = new FormRenderer();
+
+        require_once ELALLAS_DIR . 'src/Form/block.php';
+        \Elallas\Form\register_block();
 
         add_action('init', [$this, 'loadTextdomain']);
         add_shortcode('elallasi_urlap', [$this, 'shortcode']);
@@ -48,11 +52,19 @@ class Plugin
         );
     }
 
-    private function handler(): SubmissionHandler
+    private function isProActive(): bool
+    {
+        if ($this->proActive === null) {
+            $this->proActive = $this->licenseManager()->isProActive();
+        }
+        return $this->proActive;
+    }
+
+    private function handler(array $confirmData = []): SubmissionHandler
     {
         global $wpdb;
         $repo = new WithdrawalRepository($wpdb);
-        $proActive = $this->licenseManager()->isProActive();
+        $proActive = $this->isProActive();
 
         return new SubmissionHandler(
             new Validator(),
@@ -60,9 +72,9 @@ class Plugin
             fn() => current_time('mysql'),
             fn() => wp_generate_password(32, false),
             fn() => hash('sha256', $_SERVER['REMOTE_ADDR'] ?? ''),
-            function (int $id) use ($repo, $proActive) {
+            function (int $id) use ($repo, $proActive, $confirmData) {
                 if ($proActive) {
-                    $this->sendReceiptFor($repo, $id);
+                    $this->sendReceiptFor($repo, $id, $confirmData);
                 }
             }
         );
@@ -84,26 +96,48 @@ class Plugin
         exit;
     }
 
+    /**
+     * Eldönti, melyik rekord erősíthető meg. A tokent időzítésbiztosan
+     * ellenőrzi a szerveroldali pending adathoz képest. null = nincs jogosultság.
+     */
+    public function resolveConfirmationId($pending, string $postedToken): ?int
+    {
+        if (!is_array($pending) || empty($pending['id']) || empty($pending['token'])) {
+            return null;
+        }
+        if (!hash_equals((string)$pending['token'], $postedToken)) {
+            return null;
+        }
+        return (int)$pending['id'];
+    }
+
     public function handleConfirm(): void
     {
         check_admin_referer('elallas_confirm');
-        $id = (int)($_POST['id'] ?? 0);
-        $this->handler()->confirm($id);
+
+        $key = 'elallas_pending_' . $this->clientKey();
+        $pending = get_transient($key);
+        $postedToken = sanitize_text_field($_POST['token'] ?? '');
+
+        $id = $this->resolveConfirmationId($pending, $postedToken);
+        if ($id === null) {
+            wp_safe_redirect(add_query_arg('elallas_step', 'error', wp_get_referer() ?: home_url()));
+            exit;
+        }
+
+        $data = is_array($pending) ? ($pending['data'] ?? []) : [];
+        $this->handler($data)->confirm($id);
+        delete_transient($key);
+
         wp_safe_redirect(add_query_arg('elallas_step', 'done', wp_get_referer() ?: home_url()));
         exit;
     }
 
-    private function sendReceiptFor(WithdrawalRepository $repo, int $id): void
+    private function sendReceiptFor(WithdrawalRepository $repo, int $id, array $data): void
     {
-        $pending = get_transient('elallas_pending_' . $this->clientKey());
-        $data = is_array($pending) ? ($pending['data'] ?? []) : [];
         $mailer = new Mailer(fn() => current_time('mysql'));
         if ($mailer->sendReceipt($data)) {
             $repo->markReceiptSent($id, current_time('mysql'));
-        }
-
-        if ((new WooCommerceBridge())->isAvailable()) {
-            // opcionális rendelés-összekötés a következő iterációban bővíthető
         }
     }
 

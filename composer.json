@@ -1,0 +1,14 @@
+{
+  "name": "cegem360/elallasi-funkcio",
+  "description": "Kötelező online elállási funkció magyar webshopoknak (45/2014. Korm. rendelet).",
+  "type": "wordpress-plugin",
+  "require": { "php": ">=7.4" },
+  "require-dev": {
+    "phpunit/phpunit": "^9.6",
+    "brain/monkey": "^2.6",
+    "mockery/mockery": "^1.6"
+  },
+  "autoload": { "psr-4": { "Elallas\\": "src/" } },
+  "autoload-dev": { "psr-4": { "Elallas\\Tests\\": "tests/" } },
+  "config": { "sort-packages": true }
+}

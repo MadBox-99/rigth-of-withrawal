@@ -26,3 +26,5 @@ register_activation_hook(__FILE__, [\Elallas\Activator::class, 'activate']);
 add_action('plugins_loaded', static function () {
     (new \Elallas\Plugin())->boot();
 });
+
+require_once ELALLAS_DIR . 'src/Form/block.php';

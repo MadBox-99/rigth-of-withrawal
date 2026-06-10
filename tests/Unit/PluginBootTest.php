@@ -2,11 +2,12 @@
 namespace Elallas\Tests\Unit;
 
 use Brain\Monkey;
+use Brain\Monkey\Actions;
 use Brain\Monkey\Functions;
 use Elallas\Plugin;
 use PHPUnit\Framework\TestCase;
 
-class PluginTest extends TestCase
+class PluginBootTest extends TestCase
 {
     protected function setUp(): void
     {
@@ -17,16 +18,12 @@ class PluginTest extends TestCase
         Functions\when('plugin_basename')->returnArg(1);
         Functions\when('register_block_type')->justReturn(true);
     }
+    protected function tearDown(): void { Monkey\tearDown(); parent::tearDown(); }
 
-    protected function tearDown(): void
+    public function test_boot_registers_admin_post_actions(): void
     {
-        Monkey\tearDown();
-        parent::tearDown();
-    }
-
-    public function test_plugin_class_boots_without_error(): void
-    {
-        $this->expectNotToPerformAssertions();
         (new Plugin())->boot();
+        $this->assertTrue(Actions\has('admin_post_nopriv_elallas_prepare'));
+        $this->assertTrue(Actions\has('admin_post_nopriv_elallas_confirm'));
     }
 }

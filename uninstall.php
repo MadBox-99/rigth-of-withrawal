@@ -8,3 +8,4 @@ $wpdb->query("DROP TABLE IF EXISTS {$table}");
 foreach (['elallas_license_token','elallas_license_server','elallas_admin_email','elallas_db_version'] as $opt) {
     delete_option($opt);
 }
+delete_transient('elallas_license_state');

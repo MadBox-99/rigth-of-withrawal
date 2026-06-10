@@ -39,7 +39,10 @@ class Plugin
                 plugin_basename(ELALLAS_FILE),
                 ELALLAS_VERSION,
                 function () use ($server, $token) {
-                    $resp = wp_remote_get(rtrim($server, '/') . '/update-check?token=' . rawurlencode($token) . '&current_version=' . ELALLAS_VERSION, ['timeout' => 10]);
+                    $resp = wp_remote_get(
+                        rtrim($server, '/') . '/update-check?current_version=' . rawurlencode(ELALLAS_VERSION),
+                        ['timeout' => 10, 'headers' => ['Authorization' => 'Bearer ' . $token]]
+                    );
                     if (is_wp_error($resp)) { return []; }
                     $data = json_decode(wp_remote_retrieve_body($resp), true);
                     return is_array($data) ? $data : [];

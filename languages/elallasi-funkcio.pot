@@ -96,3 +96,18 @@ msgstr ""
 
 msgid "Érvényes e-mail cím megadása kötelező."
 msgstr ""
+
+msgid "Állapot"
+msgstr ""
+
+msgid "Dátum"
+msgstr ""
+
+msgid "E-mail"
+msgstr ""
+
+msgid "Azonosító"
+msgstr ""
+
+msgid "Véglegesítve"
+msgstr ""

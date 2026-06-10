@@ -31,7 +31,7 @@ class Updater
         }
 
         $transient->response[$this->pluginBasename] = (object)[
-            'slug' => 'elallasi-funkcio',
+            'slug' => dirname($this->pluginBasename),
             'plugin' => $this->pluginBasename,
             'new_version' => $latest,
             'package' => (string)($remote['package_url'] ?? ''),

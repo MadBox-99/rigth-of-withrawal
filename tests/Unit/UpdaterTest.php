@@ -32,4 +32,16 @@ class UpdaterTest extends TestCase
         $out = $updater->filterUpdate($transient);
         $this->assertSame([], $out->response);
     }
+
+    public function test_no_update_when_remote_returns_empty(): void
+    {
+        $updater = new Updater(
+            pluginBasename: 'elallasi-funkcio/elallasi-funkcio.php',
+            currentVersion: '0.1.0',
+            remoteCheck: fn() => []
+        );
+        $transient = (object)['response' => []];
+        $out = $updater->filterUpdate($transient);
+        $this->assertSame([], $out->response);
+    }
 }

@@ -52,20 +52,16 @@ class Plugin
         });
 
         add_filter('wp_privacy_personal_data_exporters', function ($exporters) {
-            global $wpdb;
-            $ex = new \Elallas\Privacy\GdprExporter($wpdb);
             $exporters['elallasi-funkcio'] = [
                 'exporter_friendly_name' => __('Elállási funkció', 'elallasi-funkcio'),
-                'callback' => fn($email, $page) => $ex->export($email, $page),
+                'callback' => fn($email, $page) => $this->gdprExporter()->export($email, $page),
             ];
             return $exporters;
         });
         add_filter('wp_privacy_personal_data_erasers', function ($erasers) {
-            global $wpdb;
-            $ex = new \Elallas\Privacy\GdprExporter($wpdb);
             $erasers['elallasi-funkcio'] = [
                 'eraser_friendly_name' => __('Elállási funkció', 'elallasi-funkcio'),
-                'callback' => fn($email, $page) => $ex->erase($email, $page),
+                'callback' => fn($email, $page) => $this->gdprExporter()->erase($email, $page),
             ];
             return $erasers;
         });
@@ -84,6 +80,12 @@ class Plugin
     public function shortcode($atts = []): string
     {
         return $this->renderer->renderForm();
+    }
+
+    private function gdprExporter(): \Elallas\Privacy\GdprExporter
+    {
+        global $wpdb;
+        return new \Elallas\Privacy\GdprExporter($wpdb);
     }
 
     private function licenseManager(): LicenseManager

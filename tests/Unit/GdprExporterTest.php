@@ -27,13 +27,15 @@ class GdprExporterTest extends TestCase
             public string $prefix = 'wp_';
             public function prepare($q, ...$a) { return $q; }
             public function get_results($q, $output) {
-                return [['id' => 1, 'consumer_name' => 'A', 'order_reference' => 'X', 'created_at' => 'now']];
+                return [['id' => 1, 'consumer_name' => 'A', 'contact_email' => 'a@b.hu', 'order_reference' => 'X', 'created_at' => 'now']];
             }
         };
         $exporter = new GdprExporter($wpdb);
         $result = $exporter->export('a@b.hu', 1);
         $this->assertNotEmpty($result['data']);
         $this->assertTrue($result['done']);
+        $values = array_column($result['data'][0]['data'], 'value');
+        $this->assertContains('a@b.hu', $values);
     }
 
     public function test_export_returns_empty_data_when_no_rows(): void

@@ -65,6 +65,21 @@ class SubmissionHandlerTest extends TestCase
         $this->assertSame([7], $fired);
     }
 
+    public function test_step2_confirm_does_not_fire_callback_when_mark_fails(): void
+    {
+        $failingRepo = new class {
+            public array $inserted = [];
+            public array $confirmed = [];
+            public function insert(array $row): int { $this->inserted[] = $row; return 7; }
+            public function markConfirmed(int $id, string $at): bool { return false; }
+        };
+        $fired = [];
+        $handler = $this->makeHandler($failingRepo, function (int $id) use (&$fired) { $fired[] = $id; });
+        $ok = $handler->confirm(7);
+        $this->assertFalse($ok);
+        $this->assertSame([], $fired);
+    }
+
     private function makeHandler(object $repo, ?callable $onConfirmed = null): SubmissionHandler
     {
         return new SubmissionHandler(

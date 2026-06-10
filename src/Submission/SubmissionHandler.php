@@ -35,7 +35,7 @@ class SubmissionHandler
 
         $errors = $this->validator->validate($input);
         if ($errors !== []) {
-            return ['ok' => false, 'errors' => $errors];
+            return ['ok' => false, 'errors' => $errors, 'id' => null, 'confirmation_token' => null];
         }
 
         $token = (string)($this->tokenFactory)();
@@ -52,6 +52,7 @@ class SubmissionHandler
     /** 2. lépcső: külön megerősítő funkció — véglegesítés. */
     public function confirm(int $id): bool
     {
+        // A timestamp-et mindig kiszámítjuk; a markConfirmed atomi módon eltárolja vagy false-t ad.
         $ok = $this->repo->markConfirmed($id, (string)($this->clock)());
         if ($ok) {
             ($this->onConfirmed)($id);

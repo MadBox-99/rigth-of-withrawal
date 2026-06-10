@@ -22,7 +22,7 @@ class LicenseClient
         }
         $code = (int)wp_remote_retrieve_response_code($resp);
         if ($code !== 200) {
-            throw new \RuntimeException('Unexpected status ' . $code);
+            throw new \RuntimeException(sprintf('License server returned HTTP %d', $code));
         }
         $data = json_decode(wp_remote_retrieve_body($resp), true);
         return is_array($data) ? $data : ['status' => 'invalid'];

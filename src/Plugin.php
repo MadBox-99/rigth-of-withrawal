@@ -14,6 +14,7 @@ class Plugin
 {
     private FormRenderer $renderer;
     private ?bool $proActive = null;
+    private ?\Elallas\Admin\SettingsPage $settingsPage = null;
 
     public function boot(): void
     {
@@ -151,11 +152,19 @@ class Plugin
         return hash('sha256', ($_SERVER['REMOTE_ADDR'] ?? '') . ($_SERVER['HTTP_USER_AGENT'] ?? ''));
     }
 
+    private function settingsPage(): \Elallas\Admin\SettingsPage
+    {
+        if ($this->settingsPage === null) {
+            $this->settingsPage = new \Elallas\Admin\SettingsPage();
+        }
+        return $this->settingsPage;
+    }
+
     public function registerAdminMenu(): void
     {
         global $wpdb;
         $list = new \Elallas\Admin\AdminPage(new \Elallas\Repository\WithdrawalRepository($wpdb));
-        $settings = new \Elallas\Admin\SettingsPage();
+        $settings = $this->settingsPage();
 
         add_menu_page(
             __('Elállások', 'elallasi-funkcio'),
@@ -168,6 +177,6 @@ class Plugin
 
     public function registerSettings(): void
     {
-        (new \Elallas\Admin\SettingsPage())->register();
+        $this->settingsPage()->register();
     }
 }

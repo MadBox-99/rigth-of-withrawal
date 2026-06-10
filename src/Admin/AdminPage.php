@@ -16,7 +16,7 @@ class AdminPage
     {
         global $wpdb;
         $table = $this->repo->tableName();
-        $rows = $wpdb->get_results("SELECT id, created_at, status, consumer_name, contact_email, order_reference, confirmed_at FROM {$table} ORDER BY created_at DESC LIMIT 200", ARRAY_A) ?: [];
+        $rows = $wpdb->get_results("SELECT created_at, status, consumer_name, contact_email, order_reference, confirmed_at FROM {$table} ORDER BY created_at DESC LIMIT 200", ARRAY_A) ?: [];
 
         echo '<div class="wrap"><h1>' . esc_html__('Beérkezett elállások', 'elallasi-funkcio') . '</h1>';
         echo '<table class="widefat striped"><thead><tr>';

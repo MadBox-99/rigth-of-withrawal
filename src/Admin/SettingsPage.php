@@ -21,7 +21,7 @@ class SettingsPage
         echo '<form method="post" action="options.php">';
         settings_fields('elallas');
         echo '<table class="form-table">';
-        printf('<tr><th>%s</th><td><input type="text" name="elallas_license_token" value="%s" class="regular-text"></td></tr>',
+        printf('<tr><th>%s</th><td><input type="password" name="elallas_license_token" value="%s" class="regular-text"></td></tr>',
             esc_html__('Licenc token', 'elallasi-funkcio'), esc_attr(get_option('elallas_license_token', '')));
         printf('<tr><th>%s</th><td><input type="url" name="elallas_license_server" value="%s" class="regular-text"></td></tr>',
             esc_html__('Licenc-szerver URL', 'elallasi-funkcio'), esc_attr(get_option('elallas_license_server', '')));

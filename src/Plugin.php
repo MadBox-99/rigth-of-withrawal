@@ -31,6 +31,23 @@ class Plugin
         add_action('admin_post_nopriv_elallas_confirm', [$this, 'handleConfirm']);
         add_action('admin_post_elallas_confirm', [$this, 'handleConfirm']);
 
+        add_filter('pre_set_site_transient_update_plugins', function ($transient) {
+            $server = (string)get_option('elallas_license_server', '');
+            $token = (string)get_option('elallas_license_token', '');
+            if ($server === '' || $token === '') { return $transient; }
+            $updater = new \Elallas\Licensing\Updater(
+                plugin_basename(ELALLAS_FILE),
+                ELALLAS_VERSION,
+                function () use ($server, $token) {
+                    $resp = wp_remote_get(rtrim($server, '/') . '/update-check?token=' . rawurlencode($token) . '&current_version=' . ELALLAS_VERSION, ['timeout' => 10]);
+                    if (is_wp_error($resp)) { return []; }
+                    $data = json_decode(wp_remote_retrieve_body($resp), true);
+                    return is_array($data) ? $data : [];
+                }
+            );
+            return $updater->filterUpdate($transient);
+        });
+
         if (is_admin()) {
             add_action('admin_menu', [$this, 'registerAdminMenu']);
             add_action('admin_init', [$this, 'registerSettings']);

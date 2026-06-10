@@ -1,0 +1,98 @@
+# Copyright (C) 2026 Cégem360
+# This file is distributed under the same license as the Elállási funkció plugin.
+msgid ""
+msgstr ""
+"Project-Id-Version: Elállási funkció 0.1.0\n"
+"Report-Msgid-Bugs-To: https://example.com\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: \n"
+"X-Domain: elallasi-funkcio\n"
+
+msgid "A név megadása kötelező."
+msgstr ""
+
+msgid "A rendelés/szerződés azonosító megadása kötelező."
+msgstr ""
+
+msgid "Az elállási szándék megadása kötelező."
+msgstr ""
+
+msgid "Azonosító:"
+msgstr ""
+
+msgid "Beállítások"
+msgstr ""
+
+msgid "Beérkezett elállások"
+msgstr ""
+
+msgid "Dátum és időpont:"
+msgstr ""
+
+msgid "E-mail (visszaigazoláshoz)"
+msgstr ""
+
+msgid "E-mail (visszaigazoláshoz):"
+msgstr ""
+
+msgid "Elállás a szerződéstől"
+msgstr ""
+
+msgid "Elállás lényege:"
+msgstr ""
+
+msgid "Elállás véglegesítése"
+msgstr ""
+
+msgid "Elállási funkció – Beállítások"
+msgstr ""
+
+msgid "Elállási szándék"
+msgstr ""
+
+msgid "Elállási szándék:"
+msgstr ""
+
+msgid "Elállások"
+msgstr ""
+
+msgid "Kérjük, erősítse meg, hogy véglegesen el kíván állni a szerződéstől."
+msgstr ""
+
+msgid "Licenc token"
+msgstr ""
+
+msgid "Licenc-szerver URL"
+msgstr ""
+
+msgid "Név"
+msgstr ""
+
+msgid "Név:"
+msgstr ""
+
+msgid "Rendelés/szerződés azonosító"
+msgstr ""
+
+msgid "Rendelés/szerződés azonosító:"
+msgstr ""
+
+msgid "Tisztelt %s!"
+msgstr ""
+
+msgid "Tovább"
+msgstr ""
+
+msgid "Visszaigazoljuk, hogy elállási nyilatkozatát átvettük."
+msgstr ""
+
+msgid "Átvételi elismervény – Elállás a szerződéstől"
+msgstr ""
+
+msgid "Értesítendő admin e-mail"
+msgstr ""
+
+msgid "Érvényes e-mail cím megadása kötelező."
+msgstr ""

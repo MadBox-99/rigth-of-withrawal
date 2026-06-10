@@ -29,6 +29,11 @@ class Plugin
         add_action('admin_post_elallas_prepare', [$this, 'handlePrepare']);
         add_action('admin_post_nopriv_elallas_confirm', [$this, 'handleConfirm']);
         add_action('admin_post_elallas_confirm', [$this, 'handleConfirm']);
+
+        if (is_admin()) {
+            add_action('admin_menu', [$this, 'registerAdminMenu']);
+            add_action('admin_init', [$this, 'registerSettings']);
+        }
     }
 
     public function loadTextdomain(): void
@@ -144,5 +149,25 @@ class Plugin
     private function clientKey(): string
     {
         return hash('sha256', ($_SERVER['REMOTE_ADDR'] ?? '') . ($_SERVER['HTTP_USER_AGENT'] ?? ''));
+    }
+
+    public function registerAdminMenu(): void
+    {
+        global $wpdb;
+        $list = new \Elallas\Admin\AdminPage(new \Elallas\Repository\WithdrawalRepository($wpdb));
+        $settings = new \Elallas\Admin\SettingsPage();
+
+        add_menu_page(
+            __('Elállások', 'elallasi-funkcio'),
+            __('Elállások', 'elallasi-funkcio'),
+            'manage_options', 'elallas', [$list, 'render'], 'dashicons-undo'
+        );
+        add_submenu_page('elallas', __('Beállítások', 'elallasi-funkcio'),
+            __('Beállítások', 'elallasi-funkcio'), 'manage_options', 'elallas-settings', [$settings, 'render']);
+    }
+
+    public function registerSettings(): void
+    {
+        (new \Elallas\Admin\SettingsPage())->register();
     }
 }

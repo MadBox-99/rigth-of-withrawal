@@ -17,6 +17,7 @@ class PluginBootTest extends TestCase
         Functions\when('load_plugin_textdomain')->justReturn(true);
         Functions\when('plugin_basename')->returnArg(1);
         Functions\when('register_block_type')->justReturn(true);
+        Functions\when('is_admin')->justReturn(false);
     }
     protected function tearDown(): void { Monkey\tearDown(); parent::tearDown(); }
 

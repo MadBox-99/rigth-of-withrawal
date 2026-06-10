@@ -188,6 +188,14 @@ class Plugin
         set_transient('elallas_pending_' . $this->clientKey(), [
             'id' => $result['id'], 'token' => $result['confirmation_token'], 'data' => $_POST,
         ], 900);
+        if ($this->isProActive()) {
+            $bridge = new \Elallas\Pro\WooCommerceBridge();
+            $wcOrderId = $bridge->findOrderId((string) ($_POST['order_reference'] ?? ''));
+            if ($wcOrderId !== null) {
+                global $wpdb;
+                (new \Elallas\Repository\WithdrawalRepository($wpdb))->linkOrder((int) $result['id'], $wcOrderId);
+            }
+        }
         wp_safe_redirect(add_query_arg('elallas_step', 'confirm', wp_get_referer() ?: home_url()));
         exit;
     }
@@ -234,6 +242,28 @@ class Plugin
         $mailer = new Mailer(fn() => current_time('mysql'));
         if ($mailer->sendReceipt($data)) {
             $repo->markReceiptSent($id, current_time('mysql'));
+        } else {
+            $fallback = (string) get_option('elallas_admin_email', '') ?: (string) get_option('admin_email', '');
+            if ($fallback !== '') {
+                wp_mail($fallback, __('FIGYELEM: elállási visszaigazoló e-mail kézbesítése sikertelen', 'elallasi-funkcio'),
+                    sprintf(__('A(z) #%d azonosítójú elálláshoz nem sikerült elküldeni a visszaigazolást. Kérjük, kézzel intézkedjen.', 'elallasi-funkcio'), $id));
+            }
+        }
+
+        $adminEmail = (string) get_option('elallas_admin_email', '');
+        if ($adminEmail === '') {
+            $adminEmail = (string) get_option('admin_email', '');
+        }
+        if ($adminEmail !== '') {
+            $subject = __('Új elállási nyilatkozat érkezett', 'elallasi-funkcio');
+            $body = sprintf(
+                /* translators: 1: name, 2: order ref, 3: email */
+                __("Új elállás érkezett.\nNév: %1\$s\nAzonosító: %2\$s\nE-mail: %3\$s", 'elallasi-funkcio'),
+                (string) ($data['consumer_name'] ?? ''),
+                (string) ($data['order_reference'] ?? ''),
+                (string) ($data['contact_email'] ?? '')
+            );
+            wp_mail($adminEmail, $subject, $body);
         }
     }
 

@@ -8,6 +8,22 @@ class WooCommerceBridge
         return function_exists('wc_get_order');
     }
 
+    public function findOrderId(string $reference): ?int
+    {
+        if (!$this->isAvailable()) {
+            return null;
+        }
+        $id = preg_replace('/[^0-9]/', '', $reference);
+        if ($id === '') {
+            return null;
+        }
+        $order = wc_get_order($id);
+        if (!$order) {
+            return null;
+        }
+        return (int) $order->get_id();
+    }
+
     public function findOrderEmail(string $reference): ?string
     {
         if (!$this->isAvailable()) {

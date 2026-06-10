@@ -44,4 +44,21 @@ class WooCommerceBridgeTest extends TestCase
         $bridge = new WooCommerceBridge();
         $this->assertNull($bridge->findOrderEmail('NO-ORDER'));
     }
+
+    public function test_find_order_id_returns_null_when_woocommerce_inactive(): void
+    {
+        Functions\when('function_exists')->justReturn(false);
+        $bridge = new WooCommerceBridge();
+        $this->assertNull($bridge->findOrderId('WC-1001'));
+    }
+
+    public function test_find_order_id_returns_id_when_order_found(): void
+    {
+        Functions\when('function_exists')->alias(fn($n) => $n === 'wc_get_order');
+        $order = new class { public function get_id() { return 1001; } };
+        Functions\when('wc_get_order')->alias(fn($id) => $id === '1001' ? $order : false);
+
+        $bridge = new WooCommerceBridge();
+        $this->assertSame(1001, $bridge->findOrderId('ORD-1001'));
+    }
 }

@@ -46,4 +46,14 @@ class WithdrawalRepository
         );
         return $ok !== false;
     }
+
+    public function linkOrder(int $id, int $wcOrderId): bool
+    {
+        $ok = $this->wpdb->update(
+            $this->tableName(),
+            ['wc_order_id' => $wcOrderId],
+            ['id' => $id]
+        );
+        return $ok !== false;
+    }
 }

@@ -69,4 +69,19 @@ class WithdrawalRepositoryTest extends TestCase
         $repo = new WithdrawalRepository($wpdb);
         $this->assertSame(0, $repo->insert(['x' => 'y']));
     }
+
+    public function test_link_order_updates_wc_order_id(): void
+    {
+        $wpdb = new class {
+            public string $prefix = 'wp_';
+            public array $lastUpdate = [];
+            public function update($t, $data, $where) { $this->lastUpdate = [$t, $data, $where]; return 1; }
+        };
+        $repo = new WithdrawalRepository($wpdb);
+        $ok = $repo->linkOrder(7, 1001);
+
+        $this->assertTrue($ok);
+        $this->assertSame(1001, $wpdb->lastUpdate[1]['wc_order_id']);
+        $this->assertSame(['id' => 7], $wpdb->lastUpdate[2]);
+    }
 }

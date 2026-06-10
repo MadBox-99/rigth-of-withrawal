@@ -30,4 +30,28 @@ class FormRendererTest extends TestCase
         $this->assertStringContainsString('name="order_reference"', $html);
         $this->assertStringContainsString('name="intent_text"', $html);
     }
+
+    public function test_renders_confirm_with_heading_id_and_token(): void
+    {
+        $data = ['consumer_name' => 'Teszt Elek', 'order_reference' => 'WC-1001'];
+        $html = (new FormRenderer())->renderConfirm($data, 42, 'tok-abc');
+
+        $this->assertStringContainsString('Elállás véglegesítése', $html);
+        $this->assertStringContainsString('value="42"', $html);
+        $this->assertStringContainsString('value="tok-abc"', $html);
+        $this->assertStringContainsString('_wpnonce', $html);
+        $this->assertStringContainsString('Teszt Elek', $html);
+    }
+
+    public function test_renders_form_with_field_errors(): void
+    {
+        $html = (new FormRenderer())->renderForm([
+            'consumer_name' => 'A név megadása kötelező.',
+            'contact_email' => 'Érvényes e-mail cím szükséges.',
+        ]);
+
+        $this->assertSame(2, substr_count($html, 'class="elallas-error"'));
+        $this->assertStringContainsString('A név megadása kötelező.', $html);
+        $this->assertStringContainsString('Érvényes e-mail cím szükséges.', $html);
+    }
 }

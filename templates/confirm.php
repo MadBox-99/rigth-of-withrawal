@@ -10,6 +10,8 @@
   <ul>
     <li><?php echo esc_html__('Név:', 'elallasi-funkcio'); ?> <?php echo esc_html($data['consumer_name'] ?? ''); ?></li>
     <li><?php echo esc_html__('Azonosító:', 'elallasi-funkcio'); ?> <?php echo esc_html($data['order_reference'] ?? ''); ?></li>
+    <li><?php echo esc_html__('E-mail (visszaigazoláshoz):', 'elallasi-funkcio'); ?> <?php echo esc_html($data['contact_email'] ?? ''); ?></li>
+    <li><?php echo esc_html__('Elállási szándék:', 'elallasi-funkcio'); ?> <?php echo esc_html($data['intent_text'] ?? ''); ?></li>
   </ul>
   <p><button type="submit" class="elallas-finalize"><?php echo esc_html__('Elállás véglegesítése', 'elallasi-funkcio'); ?></button></p>
 </form>

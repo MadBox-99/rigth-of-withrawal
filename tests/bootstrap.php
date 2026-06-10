@@ -14,6 +14,9 @@ require_once __DIR__ . '/../vendor/antecedent/patchwork/Patchwork.php';
 if (!defined('HOUR_IN_SECONDS')) {
     define('HOUR_IN_SECONDS', 3600);
 }
+if (!defined('ARRAY_A')) {
+    define('ARRAY_A', 'ARRAY_A');
+}
 if (!function_exists('esc_html__')) {
     function esc_html__($text, $domain = null) { return $text; }
 }

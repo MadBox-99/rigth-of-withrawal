@@ -51,6 +51,25 @@ class Plugin
             return $updater->filterUpdate($transient);
         });
 
+        add_filter('wp_privacy_personal_data_exporters', function ($exporters) {
+            global $wpdb;
+            $ex = new \Elallas\Privacy\GdprExporter($wpdb);
+            $exporters['elallasi-funkcio'] = [
+                'exporter_friendly_name' => __('Elállási funkció', 'elallasi-funkcio'),
+                'callback' => fn($email, $page) => $ex->export($email, $page),
+            ];
+            return $exporters;
+        });
+        add_filter('wp_privacy_personal_data_erasers', function ($erasers) {
+            global $wpdb;
+            $ex = new \Elallas\Privacy\GdprExporter($wpdb);
+            $erasers['elallasi-funkcio'] = [
+                'eraser_friendly_name' => __('Elállási funkció', 'elallasi-funkcio'),
+                'callback' => fn($email, $page) => $ex->erase($email, $page),
+            ];
+            return $erasers;
+        });
+
         if (is_admin()) {
             add_action('admin_menu', [$this, 'registerAdminMenu']);
             add_action('admin_init', [$this, 'registerSettings']);

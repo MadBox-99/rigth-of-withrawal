@@ -39,4 +39,19 @@ class MailerTest extends TestCase
         $this->assertStringContainsString('WC-1001', $captured['body']);
         $this->assertContains('Content-Type: text/html; charset=UTF-8', $captured['headers']);
     }
+
+    public function test_returns_false_when_wp_mail_fails(): void
+    {
+        Functions\when('wp_mail')->justReturn(false);
+
+        $mailer = new Mailer(fn() => '2026-06-10 12:00:00');
+        $ok = $mailer->sendReceipt([
+            'contact_email' => 'elek@example.com',
+            'consumer_name' => 'Teszt Elek',
+            'order_reference' => 'WC-1001',
+            'intent_text' => 'Elállok.',
+        ]);
+
+        $this->assertFalse($ok);
+    }
 }

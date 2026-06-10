@@ -5,6 +5,7 @@ class Activator
 {
     public const TABLE = 'elallas_requests';
 
+    /** Runs on plugin activation. Requires WordPress environment (ABSPATH, ELALLAS_VERSION). */
     public static function activate(): void
     {
         global $wpdb;

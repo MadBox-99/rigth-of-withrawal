@@ -10,17 +10,20 @@ class Withdrawal
     private string $lang;
     private string $status;
 
-    private function __construct(array $d)
+    private function __construct(array $data)
     {
-        $this->consumerName = (string)($d['consumer_name'] ?? '');
-        $this->contactEmail = (string)($d['contact_email'] ?? '');
-        $this->orderReference = (string)($d['order_reference'] ?? '');
-        $this->intentText = (string)($d['intent_text'] ?? '');
-        $this->lang = (string)($d['lang'] ?? 'hu');
-        $this->status = (string)($d['status'] ?? 'received');
+        $this->consumerName = (string)($data['consumer_name'] ?? '');
+        $this->contactEmail = (string)($data['contact_email'] ?? '');
+        $this->orderReference = (string)($data['order_reference'] ?? '');
+        $this->intentText = (string)($data['intent_text'] ?? '');
+        $this->lang = (string)($data['lang'] ?? 'hu');
+        $this->status = (string)($data['status'] ?? 'received');
     }
 
-    public static function fromArray(array $d): self { return new self($d); }
+    public static function fromArray(array $data): self
+    {
+        return new self($data);
+    }
 
     public function consumerName(): string { return $this->consumerName; }
     public function contactEmail(): string { return $this->contactEmail; }

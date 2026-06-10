@@ -31,5 +31,8 @@ class WithdrawalModelTest extends TestCase
         $this->assertSame('received', $row['status']);
         $this->assertSame('tok123', $row['confirmation_token']);
         $this->assertArrayHasKey('created_at', $row);
+        $this->assertSame('A', $row['consumer_name']);
+        $this->assertSame('a@b.hu', $row['contact_email']);
+        $this->assertNull($row['wc_order_id']);
     }
 }

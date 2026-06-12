@@ -19,6 +19,7 @@ class AdminPage
         $rows = $wpdb->get_results("SELECT created_at, status, consumer_name, contact_email, order_reference, confirmed_at FROM {$table} ORDER BY created_at DESC LIMIT 200", ARRAY_A) ?: [];
 
         echo '<div class="wrap"><h1>' . esc_html__('Beérkezett elállások', 'elallasi-funkcio') . '</h1>';
+        SetupHelp::render();
         echo '<table class="widefat striped"><thead><tr>';
         foreach (['Dátum','Állapot','Név','E-mail','Azonosító','Véglegesítve'] as $h) {
             echo '<th>' . esc_html__($h, 'elallasi-funkcio') . '</th>';

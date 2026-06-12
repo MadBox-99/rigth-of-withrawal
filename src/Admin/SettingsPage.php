@@ -18,6 +18,7 @@ class SettingsPage
     public function render(): void
     {
         echo '<div class="wrap"><h1>' . esc_html__('Elállási funkció – Beállítások', 'elallasi-funkcio') . '</h1>';
+        SetupHelp::render();
         echo '<form method="post" action="options.php">';
         settings_fields('elallas');
         echo '<table class="form-table">';

@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Elállási funkció
  * Description: Kötelező online elállási funkció magyar webshopoknak (45/2014. Korm. rendelet).
- * Version: 0.2.0
+ * Version: 0.3.0
  * Author: Cégem360
  * Requires at least: 6.0
  * Requires PHP: 7.4
@@ -15,7 +15,7 @@
 
 if (!defined('ABSPATH')) { exit; }
 
-define('ELALLAS_VERSION', '0.2.0');
+define('ELALLAS_VERSION', '0.3.0');
 define('ELALLAS_FILE', __FILE__);
 define('ELALLAS_DIR', plugin_dir_path(__FILE__));
 
